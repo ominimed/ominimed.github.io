@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.netlify.omni_hamilton.twa",
+      "sha256_cert_fingerprints": [
+        "0D:9A:BD:89:45:A0:E1:58:A8:21:1D:7E:19:66:76:62:C1:E1:1D:35:95:58:0D:E4:E7:58:B0:F2:84:50:DB:A5",
+        "C5:3A:98:8C:A7:A2:A3:12:08:1D:6B:99:8B:CE:35:F0:10:F5:B3:E5:5F:D1:58:08:7E:C1:9A:A5:7D:D6:7B:51"
+      ]
+    }
+  }
+]
