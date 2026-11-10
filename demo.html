@@ -345,6 +345,8 @@
   .evf-box #evfCount{font-weight:700;font-size:11px;color:var(--teal-deep)}
   .evf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0 8px}
   html[data-theme="dark"] .evf-box summary{color:var(--ink)}
+  html[data-theme="dark"] .sh-warn{background:#2c2410;color:#ecdcae}
+  html[data-theme="dark"] .sh-warn b{color:#f2c879}
   /* tema escuro: todo texto que usava o azul-marinho da marca passa a usar a cor de texto do tema */
   html[data-theme="dark"] #moreSheet .ms-item,html[data-theme="dark"] #moreSheet .ms-item .mi,html[data-theme="dark"] .apn .av,html[data-theme="dark"] .field label,
   html[data-theme="dark"] details.ref summary,html[data-theme="dark"] .dgrp .dh,html[data-theme="dark"] .drug2 .dn,html[data-theme="dark"] .reccard .rn,
@@ -573,7 +575,7 @@
   <div id="panels"></div>
 
   <div class="disclaimer">
-    <b>Versão de trabalho.</b> Fluxo fiel ao checklist autoral da OMNI; camada <span style="color:var(--teal-deep);font-weight:700">WALLS</span> acrescenta avaliação preditiva e referências da 6ª ed. do <i>Manual de Walls</i>. Doses e tempos são referência — não substituem julgamento clínico nem o protocolo institucional. Os registros ficam no dispositivo; use <b style="color:var(--teal-deep)">Exportar CSV</b> como backup.
+    <b>Versão de trabalho.</b> Fluxo fiel ao checklist autoral da OMNI; camada <span style="color:var(--teal-deep);font-weight:700">WALLS</span> acrescenta avaliação preditiva e referências da 6ª ed. do <i>Manual de Walls</i>. Doses e tempos são referência — não substituem julgamento clínico nem o protocolo institucional. Os registros ficam no aparelho e são enviados à sua conta OMNI; use <b style="color:var(--teal-deep)">Exportar CSV</b> se quiser uma cópia.
   </div>
 </main>
 
@@ -1048,10 +1050,10 @@ const GUIAS_HTML=`
   <details class="ref">
     <summary>Planos A → D <span class="chev">›</span></summary>
     <div class="refbody">
-      <div class="plan a"><span class="l">Plano A</span><span class="x"><b>Laringoscopia</b> — videolaringoscopia preferencial; otimizar a 1ª tentativa.</span></div>
+      <div class="plan a"><span class="l">Plano A</span><span class="x"><b>Laringoscopia</b> — videolaringoscopia e bougie preferenciais; otimizar a 1ª tentativa.</span></div>
       <div class="plan b"><span class="l">Plano B</span><span class="x"><b>Oxigenação de resgate</b> — BVM ou supraglótico.</span></div>
-      <div class="plan c"><span class="l">Plano C</span><span class="x"><b>Supraglótico definitivo</b> / considerar acordar.</span></div>
-      <div class="plan d"><span class="l">Plano D</span><span class="x"><b>Via aérea falha</b> — após <b>2 tentativas</b> (6ª ed.) ou "não intubo, não oxigeno" → cricotireoidostomia.</span></div>
+      <div class="plan c"><span class="l">Plano C</span><span class="x"><b>Supraglótico terapêutico</b>.</span></div>
+      <div class="plan d"><span class="l">Plano D</span><span class="x"><b>Via aérea falha</b> — após <b>2 tentativas</b>, ou <b>1 tentativa</b> em situação de forçado a agir, ou "não intubo, não oxigeno" → <b>cricotireoidostomia cirúrgica</b> (o extraglótico pode ser uma ponte para a cricotireoidostomia cirúrgica).</span></div>
     </div>
   </details>
   <details class="ref">
@@ -1291,7 +1293,7 @@ const ALERT={
   ['✓','Considere VNI','BiPAP ou CPAP, se não houver como oxigenar bem só com os dispositivos acima.'],
   ['✓','Cateter nasal sob o dispositivo','5 L/min desde já. Quando o paciente estiver bloqueado e sem respirar, suba para 15 L/min.'],
   ['✓','Posição','Sentado ou com a cabeceira elevada (cerca de 20–25°).']],
-  html:'<div class="sh-warn"><b>Agitado e não colabora com a pré-oxigenação?</b> Considere a sequência prolongada (atrasada) de intubação: cetamina 1 mg/kg IV, depois vários minutos de pré-oxigenação com máscara não reinalante ou VNI e só então o bloqueador e a intubação. Evidência limitada: use apenas com equipe experiente e pronta para via aérea definitiva imediata.</div>',
+  html:'<div class="sh-warn"><b>Paciente agitado, não colabora?</b> Considere a <b>sequência prolongada de intubação</b>: cetamina 1 mg/kg EV lento (em 2 minutos). Quando o paciente estiver dissociado, faça 3 minutos de pré-oxigenação com máscara não reinalante em <i>flush rate</i> ou com VNI. Depois desses 3 minutos, faça mais 1,5 mg/kg de cetamina EV e o bloqueador neuromuscular. Evidência limitada: use sempre com equipe experiente e pronta para via aérea definitiva imediata.</div>',
   note:'Se a SpO₂ cair a 93% ou menos durante tentativas, volte a oxigenar com BVM antes de tentar de novo.'}),
  si:si=>({t:`Índice de choque ${si.toFixed(2)} (&gt; 0,8)`,s:'FC ÷ PA sistólica. Risco de colapso peri-intubação.',
   html:'<div class="fq">A intubação é imediata (oxigenação ou via aérea ameaçada)?</div><div class="fb"><b>SIM</b>Não atrase. Induza com a dose do indutor ajustada à hemodinâmica, vasopressor pronto e plano de ressuscitação à mão.</div><div class="fb"><b>NÃO</b>Otimize antes de induzir.</div><div class="fq">O paciente está hipovolêmico?</div><div class="fb"><b>SIM</b>Reponha volume (cristaloide ou hemocomponentes) e reavalie.</div><div class="fb"><b>NÃO</b>Euvolêmico ou hipervolêmico: inicie vasopressor (norepinefrina ou fenilefrina).</div><div class="fq">Meta: índice de choque &lt; 0,8 antes de induzir.</div>'})
