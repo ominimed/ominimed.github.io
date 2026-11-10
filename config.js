@@ -4,6 +4,6 @@
    - key: a chave "publishable" (sb_publishable_...) ou a "anon public" (eyJ...)
    Essa chave pode ficar pública: quem protege os dados são as regras do banco (RLS). */
 window.OMNI_CLOUD = {
-  url: 'COLE-AQUI-O-PROJECT-URL',
-  key: 'COLE-AQUI-A-CHAVE-PUBLISHABLE'
+  url: 'https://tfsppysxgnhrkifbhnqj.supabase.co',
+  key: 'sb_publishable_PSR5fcZTunGcFAK7OhWowA_07ryWbdh'
 };
