@@ -302,6 +302,10 @@
   .gate-foot{font-size:11px;color:var(--muted);text-align:center;margin:14px 0 0}
   .acct{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;margin-bottom:14px}
   .acct .who{font-size:13px;color:var(--navy)} .acct .who b{font-weight:800}
+  .admin-link{display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap;background:var(--navy);color:#fff;text-decoration:none;border-radius:var(--r);padding:13px 15px;margin:-4px 0 14px;font-weight:800;font-size:14px}
+  .admin-link small{flex-basis:100%;order:3;font-weight:500;font-size:12px;color:#c9cde0;margin-top:-2px}
+  .admin-link span{margin-left:auto;font-size:20px;line-height:1;color:var(--teal-light)}
+  html[data-theme="dark"] .admin-link{background:#24264a}
   .acct button{border:1.5px solid var(--line);background:#fff;color:var(--muted);border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:700;cursor:pointer}
 
   /* ---------- tema escuro ---------- */
@@ -1789,7 +1793,7 @@ let BLOG=[
 
 function renderOmni(){
   const ac=document.getElementById('omniAcct');
-  if(ac){ const u=(currentUser&&Profile.get())||{}; ac.innerHTML = currentUser?`<div class="acct"><div class="who">Logado como <b>${esc(u.nome||currentUser)}</b>${u.crm?` · CRM ${esc(u.crm)}${u.uf?'/'+esc(u.uf):''}`:''}</div><button id="logoutBtn">Sair</button></div>`:''; const lb=document.getElementById('logoutBtn'); if(lb) lb.onclick=logout; }
+  if(ac){ const u=(currentUser&&Profile.get())||{}; ac.innerHTML = currentUser?`<div class="acct"><div class="who">Logado como <b>${esc(u.nome||currentUser)}</b>${u.crm?` · CRM ${esc(u.crm)}${u.uf?'/'+esc(u.uf):''}`:''}</div><button id="logoutBtn">Sair</button></div>${u.role==='admin'?`<a class="admin-link" href="admin.html">📊 Painel administrativo<small>registros, histórico de uso e usuários</small><span>›</span></a>`:''}`:''; const lb=document.getElementById('logoutBtn'); if(lb) lb.onclick=logout; }
   const ob=document.getElementById('onboard');
   if(ob){ let done=false; try{ done=!!localStorage.getItem('omni_onboard_done'); }catch(e){}
     ob.innerHTML = done?'':'<div class="aviso"><span class="ic">🚀</span><div><b>Comece assim:</b> 1) preencha o <b>Registro</b> do paciente · 2) rode o <b>Checklist</b> em voz alta com o time · 3) salve no <b>Pós-IOT</b> e acompanhe sua <b>Evolução</b>. <a href="#" id="onboardOk" style="color:var(--teal-deep);font-weight:800;text-decoration:none;white-space:nowrap">Entendi ✓</a></div></div>'; }

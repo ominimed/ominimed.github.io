@@ -49,7 +49,7 @@
   .bar .field input,.bar .field select{padding:8px 10px}
   .bar .grow{flex:1 1 220px}
   .muted{color:var(--muted)} .small{font-size:12px}
-  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:16px}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
   .kpi .v{font-size:28px;font-weight:800;line-height:1.1}
   .kpi .l{font-size:12px;color:var(--muted);font-weight:700;margin-top:3px}
@@ -92,7 +92,7 @@
   .cred{background:#eef7f6;border:1px dashed var(--teal);border-radius:10px;padding:12px;font-size:13px;margin-top:12px;white-space:pre-wrap}
   #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;z-index:99}
   #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-  @media (max-width:640px){ .form2{grid-template-columns:1fr} .hin .me span{display:none} }
+  @media (max-width:640px){ .form2{grid-template-columns:1fr} main{padding:14px 12px 30px} .kpi .v{font-size:23px} .hin .me span{display:none} }
 </style>
 <script src="supabase.js"></script>
 <script src="config.js"></script>
@@ -115,7 +115,7 @@
     <div class="hin">
       <img src="icon-192.png" alt="">
       <div class="t"><b>OMNI · VIA AÉREA</b><span>Painel administrativo</span></div>
-      <div class="me"><span id="meName"></span><button id="btnReload" title="Atualizar dados">↻ Atualizar</button><button id="btnOut">Sair</button></div>
+      <div class="me"><span id="meName"></span><button id="btnApp" title="Voltar ao app">← App</button><button id="btnReload" title="Atualizar dados">↻ Atualizar</button><button id="btnOut">Sair</button></div>
     </div>
     <nav class="tabs" id="tabs">
       <button data-t="geral" class="on">Visão geral</button>
@@ -185,7 +185,7 @@
 'use strict';
 const CFG=window.OMNI_CLOUD||{};
 const ok=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&window.supabase);
-const sb=ok?window.supabase.createClient(CFG.url,CFG.key,{auth:{storageKey:'omni_admin_auth',persistSession:true,autoRefreshToken:true}}):null;
+const sb=ok?window.supabase.createClient(CFG.url,CFG.key,{auth:{storageKey:'omni_sb_auth',persistSession:true,autoRefreshToken:true}}  /* mesma sessão do app */):null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtDT=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
@@ -200,6 +200,7 @@ function errPt(e){ const m=String((e&&e.message)||e||'');
   if(/failed to fetch|network/i.test(m)) return 'Sem conexão com o servidor.';
   return m||'Erro inesperado.'; }
 const EV={login:'Entrou',cadastro:'Criou a conta',app_aberto:'Abriu o app',registro_salvo:'Salvou um registro',registro_excluido:'Excluiu um registro',checklist_completo:'Completou o checklist',logout:'Saiu'};
+const SITE=location.origin+location.pathname.replace(/admin\.html$/,'');
 const UFS='AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
 
 let ME=null, P=[], R=[], E=[], RES={}, tab='geral';
@@ -213,14 +214,14 @@ async function login(){
   try{
     const {data,error}=await sb.auth.signInWithPassword({email:$('lgEmail').value.trim().toLowerCase(),password:$('lgPass').value});
     if(error) throw error;
-    await enter(data.session);
+    await enter(data.session,true);
   }catch(e){ $('lgErr').textContent=errPt(e); }
   finally{ b.disabled=false; b.textContent='Entrar'; }
 }
-async function enter(session){
+async function enter(session,manual){
   const {data:me,error}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
   if(error) throw error;
-  if(!me||me.role!=='admin'||!me.ativo){ await sb.auth.signOut({scope:'local'}); throw new Error('Acesso restrito a administradores. Peça a um administrador para liberar o seu acesso.'); }
+  if(!me||me.role!=='admin'||!me.ativo){ if(manual) await sb.auth.signOut({scope:'local'}); throw new Error('Acesso restrito a administradores. Peça a um administrador para liberar o seu acesso.'); }
   ME=me; $('meName').textContent=me.nome||me.email;
   $('login').classList.add('hidden'); $('app').classList.remove('hidden');
   $('lgPass').value='';
@@ -409,7 +410,7 @@ async function criar(){
     try{ await tmp.auth.signOut({scope:'local'}); }catch(_){}
     if(role==='admin'){ await new Promise(r=>setTimeout(r,400)); const {error:e2}=await sb.rpc('admin_set_role',{p_user:u.id,p_role:'admin'}); if(e2) throw new Error('Conta criada, mas não foi possível dar acesso de admin: '+errPt(e2)); }
     $('nErr').className='err ok'; $('nErr').textContent='Usuário criado.';
-    $('nCred').innerHTML=`<div class="cred">Envie estes dados para ${esc(nome)}:\n\nApp: https://guilhermelima012.github.io/\n${role==='admin'?'Painel: https://guilhermelima012.github.io/admin.html\n':''}E-mail: ${esc(email)}\nSenha provisória: ${esc(senha)}${data.session?'':'\n\nObs.: a pessoa precisa confirmar o e-mail pelo link que o Supabase enviou antes de entrar.'}</div><button class="btn sm ghost" style="margin-top:8px" id="btnCopy">Copiar</button>`;
+    $('nCred').innerHTML=`<div class="cred">Envie estes dados para ${esc(nome)}:\n\nApp: ${esc(SITE)}\n${role==='admin'?'Painel: '+esc(SITE)+'admin.html\n':''}E-mail: ${esc(email)}\nSenha provisória: ${esc(senha)}${data.session?'':'\n\nObs.: a pessoa precisa confirmar o e-mail pelo link que o Supabase enviou antes de entrar.'}</div><button class="btn sm ghost" style="margin-top:8px" id="btnCopy">Copiar</button>`;
     $('btnCopy').onclick=()=>{ navigator.clipboard&&navigator.clipboard.writeText($('nCred').innerText.replace(/\nCopiar$/,'')).then(()=>toast('Copiado')); };
     b.textContent='Criar outro'; b.disabled=false; b.onclick=openNovo;
     await loadAll();
@@ -419,7 +420,8 @@ async function criar(){
 /* ---------- eventos da página ---------- */
 $('lgBtn').onclick=login;
 $('lgPass').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
-$('btnOut').onclick=logout;
+$('btnOut').onclick=async()=>{ if(!confirm('Sair da conta? Você também sai do app neste aparelho.')) return; await logout(); };
+$('btnApp').onclick=()=>{ location.href='index.html'; };
 $('btnReload').onclick=()=>{ loadAll().then(()=>toast('Dados atualizados')); };
 $('tabs').onclick=e=>{ const b=e.target.closest('[data-t]'); if(!b) return; tab=b.dataset.t;
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
