@@ -808,9 +808,9 @@ const Cloud={
     }
   },
   async pull(){
-    if(!sb||!currentUser) return;
+    if(!sb||!currentUser||!myUid) return;
     try{
-      const {data,error}=await sb.from('registros').select('client_id,dados').is('excluido_em',null).order('saved_at',{ascending:false}).limit(1000);
+      const {data,error}=await sb.from('registros').select('client_id,dados').eq('user_id',myUid).is('excluido_em',null).order('saved_at',{ascending:false}).limit(1000);
       if(error||!data) return;
       const l=Store.load(), have=new Set(l.map(r=>r.id)), dels=new Set(this._get('del')); let add=0;
       data.forEach(row=>{ const id=+row.client_id; if(!have.has(id)&&!dels.has(id)&&row.dados){ l.push(Object.assign({},row.dados,{id,_sync:1})); add++; } });
