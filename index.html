@@ -486,7 +486,14 @@
   .fb{border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13.5px;margin:4px 0 4px 14px}.fb b{color:var(--teal-deep);margin-right:6px}
   .sh-x{width:100%;margin-top:10px;padding:11px;border:0;border-radius:11px;background:var(--navy);color:#fff;font-weight:700;font-size:14px}
   .ghead[data-info]{cursor:pointer}
+  .gate-link{display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:700;color:var(--teal-deep);text-decoration:none}
+  .gate-info{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.45}
+  .gate-err.ok{color:var(--green)}
+  .pill.sync{background:var(--green-bg);color:var(--green)} .pill.nosync{background:var(--amber-bg);color:var(--amber)}
+  html[data-theme="dark"] .pill.sync{background:#12312d;color:#5fd3b0} html[data-theme="dark"] .pill.nosync{background:#2c2410;color:#e8b86a}
 </style>
+<script src="supabase.js"></script>
+<script src="config.js"></script>
 </head>
 <body>
 
@@ -516,10 +523,17 @@
     </div>
 
     <div id="formLogin">
-      <div class="field"><label>Usuário</label><input id="lg_user" autocomplete="username" placeholder="seu usuário"></div>
+      <div class="field"><label>E-mail</label><input id="lg_user" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="seu e-mail"></div>
       <div class="field"><label>Senha</label><input id="lg_pass" type="password" autocomplete="current-password" placeholder="sua senha"></div>
       <div class="gate-err" id="lgErr"></div>
       <button class="btn-primary" id="btnLogin">Entrar</button>
+      <a href="#" id="forgotLink" class="gate-link">Esqueci minha senha</a>
+    </div>
+    <div id="formReset" style="display:none">
+      <p class="gate-info">Crie uma nova senha para a sua conta.</p>
+      <div class="field"><label>Nova senha</label><input id="rs_pass" type="password" autocomplete="new-password" placeholder="mínimo 6 caracteres"></div>
+      <div class="gate-err" id="rsErr"></div>
+      <button class="btn-primary" id="btnReset">Salvar nova senha</button>
     </div>
 
     <div id="formSignup" style="display:none">
@@ -529,7 +543,7 @@
         <div class="field"><label>Estado (UF)</label><select id="sg_uf"><option value="">—</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
         <div class="field"><label>CRM</label><input id="sg_crm" placeholder="nº do conselho"></div>
       </div>
-      <div class="field"><label>Usuário</label><input id="sg_user" autocomplete="username" placeholder="crie um usuário"></div>
+      <div class="field"><label>E-mail</label><input id="sg_user" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="seu e-mail"></div>
       <div class="row2">
         <div class="field"><label>Senha</label><input id="sg_pass" type="password" autocomplete="new-password" placeholder="mín. 4 caracteres"></div>
         <div class="field"><label>Confirmar</label><input id="sg_pass2" type="password" autocomplete="new-password" placeholder="repita"></div>
@@ -540,7 +554,7 @@
         <p><b>2. Não substitui o médico.</b> Checklists, doses, diluições, algoritmos, cálculos e indicadores são apenas <b>referência</b> e <b>devem</b> ser confirmados com o protocolo da instituição, a bula e a literatura vigente. O aplicativo <b>de forma alguma substitui o raciocínio clínico, o julgamento, a experiência, a autonomia e a responsabilidade do médico</b>, que permanece o único responsável por toda e qualquer decisão e conduta.</p>
         <p><b>3. Isenção de responsabilidade.</b> O uso é por conta e risco exclusivos do usuário. Na máxima extensão permitida pela lei, a OMNI, suas controladas, sócios, instrutores, autores e colaboradores <b>não se responsabilizam, sob nenhuma hipótese, por quaisquer eventos, danos diretos ou indiretos, incidentais ou consequentes, lesões, óbitos, agravos à segurança do paciente, erros, imprecisões, omissões, indisponibilidade, falhas técnicas, perda de dados ou quaisquer prejuízos</b> decorrentes do uso ou da impossibilidade de uso deste aplicativo.</p>
         <p><b>4. Sem garantias.</b> Fornecido "no estado em que se encontra" e "conforme disponível", sem garantias de qualquer natureza, incluindo exatidão, completude, atualidade ou adequação a um fim.</p>
-        <p><b>5. Dados e LGPD.</b> Os dados inseridos no aplicativo ficam armazenados no dispositivo do próprio usuário e <b>podem ser utilizados internamente pela OMNI</b>, de forma agregada e sem identificação de pacientes, para fins educacionais, de qualidade, de pesquisa e de melhoria de seus cursos e do aplicativo. A OMNI não comercializa nem compartilha esses dados com terceiros. O usuário é responsável pelo cumprimento da LGPD e do sigilo médico em relação às informações que registra e deve minimizar os dados do paciente (recomenda-se identificá-lo apenas por iniciais ou nº de atendimento, evitando o nome completo). O usuário é responsável por seus backups.</p>
+        <p><b>5. Dados e LGPD.</b> Os dados da conta (nome, e-mail, profissão, UF e CRM), os registros preenchidos no aplicativo (registro, checklist e pós-IOT, inclusive a identificação do paciente informada pelo usuário) e o histórico de uso são <b>enviados e armazenados nos servidores da OMNI</b> e <b>podem ser utilizados internamente pela OMNI</b> para fins educacionais, de qualidade, de pesquisa e de melhoria de seus cursos e do aplicativo. Uma cópia também fica no dispositivo do usuário. A OMNI não comercializa esses dados nem os compartilha com terceiros, salvo obrigação legal. O usuário é responsável pelo sigilo médico e deve minimizar os dados do paciente (recomenda-se identificá-lo apenas por iniciais ou nº de atendimento). O usuário pode solicitar à OMNI o acesso, a correção ou a exclusão dos seus dados.</p>
         <p><b>6. Aceite.</b> Ao marcar a caixa abaixo e utilizar o aplicativo, o usuário declara ser profissional habilitado e que leu, compreendeu e concorda integralmente com estes termos.</p>
       </div>
       <label class="terms-check"><input type="checkbox" id="sg_terms"> Declaro ser <b>médico(a)</b> (ou profissional habilitado) e <b>aceito</b> os Termos de Uso e a Isenção de Responsabilidade.</label>
@@ -590,81 +604,230 @@ const Store={
   load(){ try{ return JSON.parse(localStorage.getItem(this.key())||'[]'); }catch(e){ return (mem[this.key()]||[]).slice(); } },
   save(list){ mem[this.key()]=list.slice(); try{ localStorage.setItem(this.key(), JSON.stringify(list)); }catch(e){} } };
 
-/* ---------- autenticação local (uso individual no dispositivo) ---------- */
-const TERMS_VERSION='1.0';
-const Users={
-  get(){ try{ return JSON.parse(localStorage.getItem('omni_users')||'{}'); }catch(e){ return {}; } },
-  set(u){ try{ localStorage.setItem('omni_users', JSON.stringify(u)); }catch(e){} } };
-function randSalt(){ try{ const a=new Uint8Array(16); crypto.getRandomValues(a); return [...a].map(b=>b.toString(16).padStart(2,'0')).join(''); }catch(e){ return String(Math.random()).slice(2)+Date.now(); } }
-async function hashPwd(pwd,salt){
-  try{ const data=new TextEncoder().encode(salt+'::'+pwd); const buf=await crypto.subtle.digest('SHA-256',data); return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
-  catch(e){ let h=2166136261>>>0; const s=salt+'::'+pwd; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return 'f'+h.toString(16); }
+/* ---------- conta na nuvem (Supabase): login, envio dos registros e histórico de uso ---------- */
+const TERMS_VERSION='1.1';
+const CFG=window.OMNI_CLOUD||{};
+const SB_KEY='omni_sb_auth';
+const cloudOk=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&window.supabase&&window.supabase.createClient);
+let sb=null; try{ if(cloudOk) sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{storageKey:SB_KEY,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); }catch(e){ sb=null; }
+let myUid=null, loggingOut=false;
+const Profile={
+  get(){ try{ return JSON.parse(localStorage.getItem('omni_profile')||'{}'); }catch(e){ return {}; } },
+  set(p){ try{ localStorage.setItem('omni_profile', JSON.stringify(p||{})); }catch(e){} } };
+function storedSession(){ try{ const s=JSON.parse(localStorage.getItem(SB_KEY)||'null'); return s&&s.access_token?s:null; }catch(e){ return null; } }
+function gateErr(id,msg,ok){ const el=document.getElementById(id); if(el){ el.textContent=msg||''; el.classList.toggle('ok',!!ok); } }
+function errPt(e){
+  const m=String((e&&(e.message||e.error_description))||e||'');
+  if(/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
+  if(/already registered|already exists/i.test(m)) return 'Este e-mail já tem cadastro. Tente entrar.';
+  if(/at least 6|password should be/i.test(m)) return 'A senha precisa ter no mínimo 6 caracteres.';
+  if(/email not confirmed/i.test(m)) return 'Confirme o seu e-mail pelo link que enviamos e tente de novo.';
+  if(/rate limit|too many/i.test(m)) return 'Muitas tentativas. Aguarde alguns minutos e tente de novo.';
+  if(/invalid.*email|email.*invalid/i.test(m)) return 'E-mail inválido.';
+  if(/failed to fetch|network|load failed/i.test(m)) return 'Sem conexão com o servidor. Verifique a internet.';
+  return m||'Não foi possível concluir. Tente de novo.';
 }
-function gateErr(id,msg){ const el=document.getElementById(id); if(el) el.textContent=msg||''; }
+function needCloud(errId){ if(sb) return true; gateErr(errId,'Servidor não configurado. Preencha o arquivo config.js.'); return false; }
+function busyBtn(id,on,label){ const b=document.getElementById(id); if(!b) return; if(on){ b.dataset.l=b.textContent; b.textContent=label||'Aguarde…'; b.disabled=true; } else { b.textContent=b.dataset.l||b.textContent; b.disabled=false; } }
+
 async function doSignup(){
   const nome=document.getElementById('sg_nome').value.trim();
   const prof=document.getElementById('sg_prof').value;
   const uf=document.getElementById('sg_uf').value;
   const crm=document.getElementById('sg_crm').value.trim();
-  const user=document.getElementById('sg_user').value.trim().toLowerCase();
+  const email=document.getElementById('sg_user').value.trim().toLowerCase();
   const p1=document.getElementById('sg_pass').value, p2=document.getElementById('sg_pass2').value;
   const ok=document.getElementById('sg_terms').checked;
   gateErr('sgErr','');
-  if(!nome||!user){ return gateErr('sgErr','Preencha nome e usuário.'); }
+  if(!nome||!email){ return gateErr('sgErr','Preencha nome e e-mail.'); }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ return gateErr('sgErr','E-mail inválido.'); }
   if(!prof){ return gateErr('sgErr','Selecione sua profissão.'); }
   if(!uf){ return gateErr('sgErr','Selecione o estado (UF).'); }
   if(!crm){ return gateErr('sgErr','Informe o CRM / conselho.'); }
-  if(p1.length<4){ return gateErr('sgErr','Senha de no mínimo 4 caracteres.'); }
+  if(p1.length<6){ return gateErr('sgErr','A senha precisa ter no mínimo 6 caracteres.'); }
   if(p1!==p2){ return gateErr('sgErr','As senhas não conferem.'); }
   if(!ok){ return gateErr('sgErr','É necessário declarar e aceitar os Termos.'); }
-  const users=Users.get();
-  if(users[user]){ return gateErr('sgErr','Usuário já existe. Tente entrar.'); }
-  const salt=randSalt(); const hash=await hashPwd(p1,salt);
-  users[user]={nome,profissao:prof,uf,crm,user,salt,hash,termsVersion:TERMS_VERSION,acceptedAt:new Date().toISOString()};
-  Users.set(users);
-  startSession(user);
+  if(!needCloud('sgErr')) return;
+  busyBtn('btnSignup',true,'Criando conta…');
+  try{
+    const {data,error}=await sb.auth.signUp({email,password:p1,options:{data:{nome,profissao:prof,uf,crm,terms_version:TERMS_VERSION,terms_accepted_at:new Date().toISOString()}}});
+    if(error) return gateErr('sgErr',errPt(error));
+    if(!data.session) return gateErr('sgErr','Cadastro feito! Confirme pelo link enviado ao seu e-mail e depois entre.',true);
+    await afterLogin(data.session,'cadastro');
+  }catch(e){ gateErr('sgErr',errPt(e)); }
+  finally{ busyBtn('btnSignup',false); }
 }
 async function doLogin(){
-  const user=document.getElementById('lg_user').value.trim().toLowerCase();
+  const email=document.getElementById('lg_user').value.trim().toLowerCase();
   const pass=document.getElementById('lg_pass').value;
   gateErr('lgErr','');
-  const users=Users.get(); const u=users[user];
-  if(!u){ return gateErr('lgErr','Usuário não encontrado.'); }
-  const hash=await hashPwd(pass,u.salt);
-  if(hash!==u.hash){ return gateErr('lgErr','Senha incorreta.'); }
-  startSession(user);
+  if(!email||!pass) return gateErr('lgErr','Informe e-mail e senha.');
+  if(!needCloud('lgErr')) return;
+  busyBtn('btnLogin',true,'Entrando…');
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error) return gateErr('lgErr',errPt(error));
+    await afterLogin(data.session,'login');
+  }catch(e){ gateErr('lgErr',errPt(e)); }
+  finally{ busyBtn('btnLogin',false); }
+}
+async function afterLogin(session,tipo){
+  const u=session.user; myUid=u.id;
+  const {data:prof}=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();
+  if(prof&&prof.ativo===false){ await sb.auth.signOut({scope:'local'}); myUid=null; return gateErr(tipo==='cadastro'?'sgErr':'lgErr','Sua conta está desativada. Fale com a OMNI.'); }
+  const meta=u.user_metadata||{};
+  Profile.set(prof||{id:u.id,email:u.email,nome:meta.nome,crm:meta.crm,uf:meta.uf,profissao:meta.profissao,role:'medico'});
+  startSession(u.email);
+  Cloud.log(tipo);
+  Cloud.pull();
+}
+async function doForgot(e){
+  if(e) e.preventDefault();
+  const email=document.getElementById('lg_user').value.trim().toLowerCase();
+  if(!email) return gateErr('lgErr','Digite o seu e-mail acima e toque de novo em "Esqueci minha senha".');
+  if(!needCloud('lgErr')) return;
+  try{
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+    if(error) return gateErr('lgErr',errPt(error));
+    gateErr('lgErr','Enviamos um link para o seu e-mail. Abra-o para criar uma nova senha.',true);
+  }catch(err){ gateErr('lgErr',errPt(err)); }
+}
+async function doReset(){
+  const p=document.getElementById('rs_pass').value;
+  if(p.length<6) return gateErr('rsErr','A senha precisa ter no mínimo 6 caracteres.');
+  busyBtn('btnReset',true);
+  try{
+    const {data,error}=await sb.auth.updateUser({password:p});
+    if(error) return gateErr('rsErr',errPt(error));
+    const {data:sd}=await sb.auth.getSession();
+    document.getElementById('formReset').style.display='none';
+    if(sd&&sd.session){ await afterLogin(sd.session,'login'); toast('Senha alterada'); }
+  }catch(e){ gateErr('rsErr',errPt(e)); }
+  finally{ busyBtn('btnReset',false); }
 }
 function startSession(user){
   currentUser=user;
-  try{ localStorage.setItem('omni_session', user); }catch(e){}
   const g=document.getElementById('gate'); if(g) g.classList.add('hidden');
-  ['lg_pass','sg_pass','sg_pass2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['lg_pass','sg_pass','sg_pass2','rs_pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   restoreLive();
   renderOmni(); selectTab(0);
 }
-function logout(){
-  saveLive();               // preserva o rascunho do usuário para o próximo login
-  currentUser=null;
+function clearScreen(){
   for(const k in state) delete state[k];   // limpa a tela p/ não vazar dados a outro usuário
   document.querySelectorAll('.checked,.sel:not([data-grp="evop"]):not(.flx-tab)').forEach(el=>el.classList.remove('checked','sel'));
   document.querySelectorAll('.pick-on').forEach(el=>el.textContent='');
   FORM_IDS.forEach(id=>{ const el=document.getElementById(id); if(el){ el.value=''; el.removeAttribute('data-touched'); } });
   const ab=document.getElementById('advBox'); if(ab) ab.style.display='none';
   update(); renderDoseSug();
-  try{ localStorage.removeItem('omni_session'); }catch(e){}
+}
+async function logout(){
+  saveLive();               // preserva o rascunho do usuário para o próximo login
+  loggingOut=true;
+  try{ Cloud.log('logout'); await Cloud.flush(); }catch(e){}
+  try{ if(sb) await sb.auth.signOut({scope:'local'}); }catch(e){}
+  try{ localStorage.removeItem(SB_KEY); }catch(e){}
+  loggingOut=false;
+  currentUser=null; myUid=null; Profile.set({});
+  clearScreen();
   const g=document.getElementById('gate'); if(g) g.classList.remove('hidden');
 }
+function showForm(which){
+  ['formLogin','formSignup','formReset'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=(id===which)?'block':'none'; });
+  const sl=document.getElementById('segLogin'), ss=document.getElementById('segSignup');
+  if(sl) sl.classList.toggle('sel',which!=='formSignup'); if(ss) ss.classList.toggle('sel',which==='formSignup');
+}
 function initAuth(){
-  let sess=null; try{ sess=localStorage.getItem('omni_session'); }catch(e){}
-  const users=Users.get();
-  if(sess && users[sess]){ currentUser=sess; const g=document.getElementById('gate'); if(g) g.classList.add('hidden'); restoreLive(); }
+  const ses=storedSession();
+  if(ses){
+    const u=ses.user||{}; myUid=u.id||Profile.get().id||null;
+    currentUser=u.email||Profile.get().email||null;
+    if(currentUser){ const g=document.getElementById('gate'); if(g) g.classList.add('hidden'); restoreLive(); }
+  }
+  if(!cloudOk) gateErr('lgErr','Servidor não configurado. Preencha o arquivo config.js.');
   // wiring
   const sl=document.getElementById('segLogin'), ss=document.getElementById('segSignup');
-  if(sl) sl.onclick=()=>{ sl.classList.add('sel'); ss.classList.remove('sel'); document.getElementById('formLogin').style.display='block'; document.getElementById('formSignup').style.display='none'; };
-  if(ss) ss.onclick=()=>{ ss.classList.add('sel'); sl.classList.remove('sel'); document.getElementById('formSignup').style.display='block'; document.getElementById('formLogin').style.display='none'; };
+  if(sl) sl.onclick=()=>showForm('formLogin');
+  if(ss) ss.onclick=()=>showForm('formSignup');
   const bl=document.getElementById('btnLogin'); if(bl) bl.onclick=doLogin;
   const bs=document.getElementById('btnSignup'); if(bs) bs.onclick=doSignup;
+  const fl=document.getElementById('forgotLink'); if(fl) fl.onclick=doForgot;
+  const br=document.getElementById('btnReset'); if(br) br.onclick=doReset;
+  if(sb){
+    sb.auth.onAuthStateChange((ev,session)=>{
+      if(ev==='PASSWORD_RECOVERY'){ const g=document.getElementById('gate'); if(g) g.classList.remove('hidden'); showForm('formReset'); return; }
+      if(ev==='SIGNED_OUT'&&currentUser&&!loggingOut){ setTimeout(()=>{ if(currentUser&&!storedSession()) logout(); },0); }
+      if(session&&session.user) myUid=session.user.id;
+    });
+    if(currentUser) setTimeout(()=>{ Cloud.refreshProfile(); Cloud.log('app_aberto'); Cloud.pull(); },50);
+  }
+  window.addEventListener('online',()=>Cloud.flush());
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') Cloud.flush(); });
 }
+
+/* fila local → servidor (funciona sem internet e envia quando a conexão voltar) */
+const Cloud={
+  _k(n){ return 'omni_'+n+'__'+(currentUser||'anon'); },
+  _get(n){ try{ return JSON.parse(localStorage.getItem(this._k(n))||'[]'); }catch(e){ return []; } },
+  _set(n,v){ try{ localStorage.setItem(this._k(n),JSON.stringify(v)); }catch(e){} },
+  busy:false, again:false,
+  log(tipo,detalhe){
+    if(!currentUser) return;
+    if(tipo==='app_aberto'){ try{ const k=this._k('lastopen'), t=+localStorage.getItem(k)||0; if(Date.now()-t<30*60000) return; localStorage.setItem(k,String(Date.now())); }catch(e){} }
+    const q=this._get('evq'); q.push({tipo,detalhe:detalhe||null,criado_em:new Date().toISOString()}); this._set('evq',q.slice(-500));
+    this.flush();
+  },
+  markDeleted(id){ const d=this._get('del'); if(!d.includes(id)) d.push(id); this._set('del',d); this.flush(); },
+  row(r){ const d=Object.assign({},r); delete d._sync;
+    return { user_id:myUid, client_id:r.id, saved_at:r.savedAt, paciente:r.nome||null, idade:r.idade||null, sexo:r.sexo||null,
+      hospital:r.hospital||null, setor:r.setor||null, via_aerea:r.viaAerea||null, desfecho:r.desfecho||null,
+      checklist_pct:(r.checklistPct==null?null:+r.checklistPct), evento_adverso:r.advHas?r.advHas==='Sim':null,
+      dificuldade:(r.dificuldade&&r.dificuldade.length)?r.dificuldade:null, dados:d }; },
+  async flush(){
+    if(!sb||!currentUser||!myUid) return;
+    if(this.busy){ this.again=true; return; }
+    if(navigator.onLine===false) return;
+    this.busy=true;
+    try{
+      const q=this._get('evq');
+      if(q.length){ const {error}=await sb.from('eventos').insert(q); if(!error) this._set('evq',this._get('evq').slice(q.length)); }
+      const pend=Store.load().filter(r=>!r._sync);
+      for(const r of pend){
+        const {error}=await sb.from('registros').upsert(this.row(r),{onConflict:'user_id,client_id'});
+        if(error) break;
+        const l=Store.load(); const x=l.find(y=>y.id===r.id); if(x){ x._sync=1; Store.save(l); }
+      }
+      for(const id of this._get('del')){
+        const {error}=await sb.from('registros').update({excluido_em:new Date().toISOString()}).eq('client_id',id);
+        if(error) break; this._set('del',this._get('del').filter(x=>x!==id));
+      }
+    }catch(e){}
+    finally{
+      this.busy=false;
+      if(document.getElementById('panel-salvos')&&TABS[active]&&TABS[active].id==='salvos') renderRecs();
+      if(this.again){ this.again=false; setTimeout(()=>this.flush(),300); }
+    }
+  },
+  async pull(){
+    if(!sb||!currentUser) return;
+    try{
+      const {data,error}=await sb.from('registros').select('client_id,dados').is('excluido_em',null).order('saved_at',{ascending:false}).limit(1000);
+      if(error||!data) return;
+      const l=Store.load(), have=new Set(l.map(r=>r.id)), dels=new Set(this._get('del')); let add=0;
+      data.forEach(row=>{ const id=+row.client_id; if(!have.has(id)&&!dels.has(id)&&row.dados){ l.push(Object.assign({},row.dados,{id,_sync:1})); add++; } });
+      if(add){ l.sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt))); Store.save(l); if(TABS[active]&&['salvos','evolucao'].includes(TABS[active].id)) selectTab(active); }
+    }catch(e){}
+    this.flush();
+  },
+  async refreshProfile(){
+    if(!sb||!myUid) return;
+    try{
+      const {data,error}=await sb.from('profiles').select('*').eq('id',myUid).maybeSingle();
+      if(error) return;
+      if(data&&data.ativo===false){ await logout(); gateErr('lgErr','Sua conta está desativada. Fale com a OMNI.'); return; }
+      if(data){ Profile.set(data); renderOmni(); }
+    }catch(e){}
+  }
+};
 
 /* ---------- checklist data ---------- */
 const CHK=[
@@ -1154,6 +1317,7 @@ document.addEventListener('input',e=>{
 
 /* ---------- interactions ---------- */
 panelsEl.addEventListener('click',e=>{
+  if(e.target.closest('.ck-sheet,.ck-walls,.ck-wsec')) _ckTouched=true;
   /* recolher / expandir seção */
   const tg=e.target.closest('.ck-tg');
   if(tg){ const sec=tg.closest('.ck-sec'); const c=sec.classList.toggle('collapsed');
@@ -1281,7 +1445,7 @@ async function shareEvo(){
   const w2=Math.round(recs.filter(isWithin2).length/total*100);
   const now=new Date(); const mKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   const mes=recs.filter(r=>(r.savedAt||'').slice(0,7)===mKey).length;
-  const users=Users.get(); const nome=(currentUser&&users[currentUser]&&users[currentUser].nome)||'';
+  const nome=(currentUser&&Profile.get().nome)||'';
 
   const W=1080,H=1920, c=document.createElement('canvas'); c.width=W; c.height=H;
   const x=c.getContext('2d');
@@ -1347,6 +1511,7 @@ function renderInfusion(){
   }).join('');
 }
 
+let _ckWasFull=false, _ckTouched=false;
 function update(){
   let total=0,done=0;
   CHK.forEach(sec=>{ const st=(sec._tasks||[]).length, sd=(sec._tasks||[]).filter(k=>state[k]).length;
@@ -1361,7 +1526,8 @@ function update(){
     c.textContent = lis.length ? [...lis].filter(x=>state[x.dataset.key]).length+'/'+lis.length : ''; });
   let flagged=0; CHK.find(s=>s.id==='dificuldades').groups.forEach((g,gi)=>{ if(g.risk)(g.items||[]).forEach((it,ii)=>{ if(state[`dificuldades.${gi}.${ii}`]) flagged++; }); });
   const bn=document.getElementById('banner-dif'); if(bn) bn.classList.toggle('show',flagged>0);
-  const pct=total?Math.round(done/total*100):0; const pb=document.getElementById('pbar'); if(pb) pb.style.width=pct+'%';
+  const pct=total?Math.round(done/total*100):0; if(pct===100&&!_ckWasFull&&_ckTouched&&currentUser) Cloud.log('checklist_completo'); _ckWasFull=pct===100; _ckTouched=false;
+  const pb=document.getElementById('pbar'); if(pb) pb.style.width=pct+'%';
   const btn=document.getElementById('doubtBtn'), sub=document.getElementById('doubtSub');
   if(btn&&sub){ if(pct===100){ if(!btn.classList.contains('go')&&navigator.vibrate) navigator.vibrate([20,40,20]); btn.classList.add('go'); sub.textContent='checklist completo · confirme com a equipe'; }
     else{ btn.classList.remove('go'); sub.textContent=pct+'% · faltam '+(total-done)+' itens'; } }
@@ -1386,14 +1552,29 @@ function collectRecord(){
     vitalsIn:{pa:v('vi_pa'),fc:v('vi_fc'),fr:v('vi_fr'),spo2:v('vi_spo2'),temp:v('vi_temp'),glic:v('vi_glic')},
     tecnica:pickLabel('equipamento.1.tecnica'), tubo:pickLabel('equipamento.1.tubo'), preox:pickLabel('paciente.3.preox'),
     dificuldade:flagged, checklistPct: total?Math.round(done/total*100):0,
-    guia:chipVal('guia'), sedacao:chipVal('sed'), post, viaAerea:chipVal('via'), resgate:chipVal('resgate'), desfecho:chipVal('desf'), advHas:chipVal('advhas'), adversos:chipVals('adv'), obs:v('f_obs')
+    guia:chipVal('guia'), sedacao:chipVal('sed'), post, viaAerea:chipVal('via'), resgate:chipVal('resgate'), desfecho:chipVal('desf'), advHas:chipVal('advhas'), adversos:chipVals('adv'), obs:v('f_obs'),
+    checklist:checklistDetail()
   };
+}
+/* checklist item a item, para o painel do administrador */
+function checklistDetail(){
+  const out=[];
+  CHK.forEach(sec=>{ sec.groups.forEach((g,gi)=>{
+    if(g.sep) return;
+    if(g.risk){ (g.items||[]).forEach((it,ii)=>out.push({secao:'Avaliação preditiva',grupo:g.key+' · '+g.name,item:(it.b?it.b+' — ':'')+it.t,ok:!!state[`${sec.id}.${gi}.${ii}`]})); return; }
+    out.push({secao:sec.label,grupo:g.head,item:null,ok:!!state[`${sec.id}.${gi}.head`]});
+    (g.items||[]).forEach((it,ii)=>out.push({secao:sec.label,grupo:g.head,item:it.t,ok:!!state[`${sec.id}.${gi}.${ii}`]}));
+    (g.pickers||[]).forEach(pc=>out.push({secao:sec.label,grupo:g.head,item:pc.title,escolha:pickLabel(`${sec.id}.${gi}.${pc.key}`)||''}));
+    (g.items2||[]).forEach((it,ii)=>out.push({secao:sec.label,grupo:g.head,item:it.t,ok:!!state[`${sec.id}.${gi}.b${ii}`]}));
+  }); });
+  return out;
 }
 
 function saveRecord(){
   const r=collectRecord();
   if(!r.nome){ toast('Informe ao menos o nome/identificação'); selectTab(0); return; }
   const list=Store.load(); list.unshift(r); Store.save(list);
+  Cloud.log('registro_salvo',{client_id:r.id,checklist_pct:r.checklistPct});
   toast('Registro salvo'); selectTab(TABS.findIndex(t=>t.id==='salvos'));
 }
 
@@ -1418,11 +1599,12 @@ function renderRecs(){
         ${r.resgate&&r.resgate!=='Sem resgate'?`<span class="pill">resgate: ${esc(r.resgate)}</span>`:''}
         ${r.sedacao?`<span class="pill">${esc(r.sedacao)}</span>`:''}
         <span class="pill">checklist ${r.checklistPct}%</span>
+        <span class="pill ${r._sync?'sync':'nosync'}">${r._sync?'☁ enviado':'⏳ aguardando envio'}</span>
         ${adv}
         ${r.desfecho?`<span class="pill ${desfCls}">${esc(r.desfecho)}</span>`:''}
       </div></div>`;
   }).join('');
-  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const id=+b.dataset.del; if(confirm('Excluir este registro?')){ const l=Store.load().filter(x=>x.id!==id); Store.save(l); renderRecs(); } });
+  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const id=+b.dataset.del; if(confirm('Excluir este registro?')){ const l=Store.load().filter(x=>x.id!==id); Store.save(l); Cloud.markDeleted(id); Cloud.log('registro_excluido',{client_id:id}); renderRecs(); } });
 }
 
 /* ---------- evolução / indicadores ---------- */
@@ -1607,7 +1789,7 @@ let BLOG=[
 
 function renderOmni(){
   const ac=document.getElementById('omniAcct');
-  if(ac){ const users=Users.get(); const u=(currentUser&&users[currentUser])||{}; ac.innerHTML = currentUser?`<div class="acct"><div class="who">Logado como <b>${esc(u.nome||currentUser)}</b>${u.crm?` · CRM ${esc(u.crm)}${u.uf?'/'+esc(u.uf):''}`:''}</div><button id="logoutBtn">Sair</button></div>`:''; const lb=document.getElementById('logoutBtn'); if(lb) lb.onclick=logout; }
+  if(ac){ const u=(currentUser&&Profile.get())||{}; ac.innerHTML = currentUser?`<div class="acct"><div class="who">Logado como <b>${esc(u.nome||currentUser)}</b>${u.crm?` · CRM ${esc(u.crm)}${u.uf?'/'+esc(u.uf):''}`:''}</div><button id="logoutBtn">Sair</button></div>`:''; const lb=document.getElementById('logoutBtn'); if(lb) lb.onclick=logout; }
   const ob=document.getElementById('onboard');
   if(ob){ let done=false; try{ done=!!localStorage.getItem('omni_onboard_done'); }catch(e){}
     ob.innerHTML = done?'':'<div class="aviso"><span class="ic">🚀</span><div><b>Comece assim:</b> 1) preencha o <b>Registro</b> do paciente · 2) rode o <b>Checklist</b> em voz alta com o time · 3) salve no <b>Pós-IOT</b> e acompanhe sua <b>Evolução</b>. <a href="#" id="onboardOk" style="color:var(--teal-deep);font-weight:800;text-decoration:none;white-space:nowrap">Entendi ✓</a></div></div>'; }

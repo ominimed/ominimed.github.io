@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>OMNI · Painel administrativo</title>
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{--navy:#20204a;--navy2:#2c2c66;--teal:#34b8b0;--teal-deep:#1f8e87;--teal-light:#60c8c0;
+    --ink:#20204a;--muted:#6b7186;--line:#e4e7f0;--bg:#f4f6fb;--card:#fff;
+    --amber:#d98427;--amber-bg:#fdf3e7;--red:#d23b54;--red-bg:#fdebef;--green:#1aa57f;--green-bg:#e7f6f1;--r:14px}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  button,input,select{font:inherit}
+  .hidden{display:none!important}
+  /* login */
+  #login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(120deg,var(--navy),var(--navy2))}
+  .lcard{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:380px;box-shadow:0 20px 60px -20px rgba(0,0,0,.5)}
+  .lbrand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .lbrand img{width:40px;height:40px;border-radius:10px}
+  .lbrand b{display:block;letter-spacing:.2em;color:var(--teal-deep);font-size:13px}
+  .lbrand span{font-size:16px;font-weight:800}
+  .field{margin-bottom:12px} .field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}
+  .field input,.field select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;color:var(--ink);outline:none}
+  .field input:focus,.field select:focus{border-color:var(--teal)}
+  .btn{border:none;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer;background:var(--teal-deep);color:#fff}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+  .btn.warn{background:#fff;color:var(--red);border:1.5px solid #f2c4cd}
+  .btn.full{width:100%}
+  .err{color:var(--red);font-size:13px;min-height:18px;margin:6px 0} .err.ok{color:var(--green)}
+  /* app */
+  header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff}
+  .hin{max-width:1280px;margin:0 auto;padding:14px 20px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .hin img{width:34px;height:34px;border-radius:9px;background:#fff;padding:2px}
+  .hin .t b{display:block;letter-spacing:.2em;color:var(--teal-light);font-size:11px}
+  .hin .t span{font-weight:800;font-size:17px}
+  .hin .me{margin-left:auto;font-size:13px;color:#cfd3e6;display:flex;align-items:center;gap:10px}
+  .hin .me button{background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer}
+  nav.tabs{max-width:1280px;margin:0 auto;padding:12px 20px 0;display:flex;gap:4px;overflow-x:auto}
+  nav.tabs button{background:none;border:none;color:#cfd3e6;font-weight:800;padding:10px 14px;border-radius:10px 10px 0 0;cursor:pointer;white-space:nowrap}
+  nav.tabs button.on{background:var(--bg);color:var(--ink)}
+  main{max-width:1280px;margin:0 auto;padding:18px 20px 40px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:14px}
+  .bar .field{margin:0}
+  .bar .field input,.bar .field select{padding:8px 10px}
+  .bar .grow{flex:1 1 220px}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+  .kpi .v{font-size:28px;font-weight:800;line-height:1.1}
+  .kpi .l{font-size:12px;color:var(--muted);font-weight:700;margin-top:3px}
+  .kpi .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+  .card h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .hb{display:grid;grid-template-columns:minmax(110px,40%) 1fr 44px;gap:8px;align-items:center;padding:4px 0;font-size:12.5px}
+  .hb .tr{background:var(--line);border-radius:99px;height:10px;overflow:hidden} .hb .f{height:100%;background:var(--teal);border-radius:99px}
+  .hb .n{text-align:right;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tw{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{position:sticky;top:0;background:#f0f2f8;text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:9px 10px;white-space:nowrap}
+  td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
+  tr.click{cursor:pointer} tr.click:hover td{background:#f7f9fc}
+  tr.del td{color:#a3a8ba}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#eef0f7;color:var(--ink);white-space:nowrap}
+  .pill.ok{background:var(--green-bg);color:var(--green)} .pill.bad{background:var(--red-bg);color:var(--red)} .pill.warn{background:var(--amber-bg);color:var(--amber)}
+  .pill.adm{background:var(--navy);color:#fff}
+  .empty{padding:30px;text-align:center;color:var(--muted)}
+  .count{font-size:12px;color:var(--muted);margin:0 0 8px}
+  /* modal */
+  .mbg{position:fixed;inset:0;background:rgba(20,20,50,.55);display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto;z-index:50}
+  .mbg.on{display:flex}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:860px;padding:20px 22px;position:relative}
+  .modal h2{margin:0 0 2px;font-size:20px} .modal .x{position:absolute;right:14px;top:12px;border:none;background:#eef0f7;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px}
+  .sec{margin-top:16px} .sec h4{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep)}
+  .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 14px}
+  .kv div{font-size:13px} .kv span{display:block;font-size:11px;color:var(--muted);font-weight:700}
+  .ckg{columns:2 300px;column-gap:20px}
+  .ckb{break-inside:avoid;margin-bottom:8px}
+  .ckb b{display:block;font-size:13px}
+  .ckb .i{font-size:12.5px;padding-left:4px}
+  .ckb .i.y::before{content:"✓ ";color:var(--green);font-weight:800} .ckb .i.n::before{content:"✗ ";color:#c0c4d2;font-weight:800}
+  .ckb .i.n{color:#9aa0b4}
+  .ckb .i.c::before{content:"● ";color:var(--teal)}
+  .vt{border-collapse:collapse;font-size:12.5px} .vt th,.vt td{padding:5px 9px;border:1px solid var(--line);position:static}
+  .form2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .note{background:var(--amber-bg);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:10px}
+  .cred{background:#eef7f6;border:1px dashed var(--teal);border-radius:10px;padding:12px;font-size:13px;margin-top:12px;white-space:pre-wrap}
+  #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:.2s;pointer-events:none;z-index:99}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-width:640px){ .form2{grid-template-columns:1fr} .hin .me span{display:none} }
+</style>
+<script src="supabase.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+
+<div id="login">
+  <div class="lcard">
+    <div class="lbrand"><img src="icon-192.png" alt=""><div><b>OMNI</b><span>Painel administrativo</span></div></div>
+    <div class="field"><label>E-mail</label><input id="lgEmail" type="email" autocomplete="email" autocapitalize="off"></div>
+    <div class="field"><label>Senha</label><input id="lgPass" type="password" autocomplete="current-password"></div>
+    <div class="err" id="lgErr"></div>
+    <button class="btn full" id="lgBtn">Entrar</button>
+    <p class="muted small" style="margin:14px 0 0">Acesso restrito aos administradores da OMNI. Use o mesmo e-mail e senha do app.</p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <div class="hin">
+      <img src="icon-192.png" alt="">
+      <div class="t"><b>OMNI · VIA AÉREA</b><span>Painel administrativo</span></div>
+      <div class="me"><span id="meName"></span><button id="btnReload" title="Atualizar dados">↻ Atualizar</button><button id="btnOut">Sair</button></div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-t="geral" class="on">Visão geral</button>
+      <button data-t="registros">Registros</button>
+      <button data-t="uso">Histórico de uso</button>
+      <button data-t="usuarios">Usuários</button>
+    </nav>
+  </header>
+  <main>
+    <section id="t-geral"></section>
+    <section id="t-registros" class="hidden">
+      <div class="bar">
+        <div class="field grow"><label>Buscar</label><input id="fBusca" placeholder="paciente, hospital, setor…"></div>
+        <div class="field"><label>Médico</label><select id="fMed"><option value="">Todos</option></select></div>
+        <div class="field"><label>De</label><input id="fDe" type="date"></div>
+        <div class="field"><label>Até</label><input id="fAte" type="date"></div>
+        <div class="field"><label>&nbsp;</label><label class="small" style="display:flex;gap:6px;align-items:center;font-weight:600;padding:8px 0"><input type="checkbox" id="fExc"> mostrar excluídos</label></div>
+        <div class="field"><label>&nbsp;</label><button class="btn ghost" id="btnCsv">⬇ Exportar CSV</button></div>
+      </div>
+      <p class="count" id="regCount"></p>
+      <div class="tw"><table><thead><tr><th>Data</th><th>Médico</th><th>Paciente</th><th>Idade/Sexo</th><th>Hospital · setor</th><th>Via aérea</th><th>Desfecho</th><th>Checklist</th><th>Alertas</th></tr></thead><tbody id="regBody"></tbody></table></div>
+    </section>
+    <section id="t-uso" class="hidden">
+      <div class="card" style="margin-bottom:14px"><h3>Por usuário</h3>
+        <div class="tw" style="border:none"><table><thead><tr><th>Usuário</th><th>Último acesso</th><th>Acessos</th><th>Registros</th><th>Último registro</th></tr></thead><tbody id="resBody"></tbody></table></div></div>
+      <div class="bar">
+        <div class="field"><label>Usuário</label><select id="uMed"><option value="">Todos</option></select></div>
+        <div class="field"><label>Evento</label><select id="uTipo"><option value="">Todos</option></select></div>
+        <div class="field"><label>De</label><input id="uDe" type="date"></div>
+        <div class="field"><label>Até</label><input id="uAte" type="date"></div>
+      </div>
+      <p class="count" id="evCount"></p>
+      <div class="tw"><table><thead><tr><th>Data e hora</th><th>Usuário</th><th>Evento</th><th>Detalhe</th></tr></thead><tbody id="evBody"></tbody></table></div>
+    </section>
+    <section id="t-usuarios" class="hidden">
+      <div class="bar">
+        <div class="field grow"><label>Buscar</label><input id="pBusca" placeholder="nome, e-mail, CRM…"></div>
+        <div class="field"><label>&nbsp;</label><button class="btn" id="btnNovo">+ Novo usuário</button></div>
+      </div>
+      <p class="count" id="usrCount"></p>
+      <div class="tw"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Profissão</th><th>CRM/UF</th><th>Papel</th><th>Status</th><th>Cadastro</th><th>Último acesso</th><th>Ações</th></tr></thead><tbody id="usrBody"></tbody></table></div>
+    </section>
+  </main>
+</div>
+
+<div class="mbg" id="mDet"><div class="modal"><button class="x" data-close>✕</button><div id="detBody"></div></div></div>
+
+<div class="mbg" id="mNovo"><div class="modal" style="max-width:560px"><button class="x" data-close>✕</button>
+  <h2>Novo usuário</h2><p class="muted small" style="margin:2px 0 14px">A pessoa entra no app e no painel com este e-mail e esta senha.</p>
+  <div class="form2">
+    <div class="field"><label>Nome</label><input id="nNome"></div>
+    <div class="field"><label>E-mail</label><input id="nEmail" type="email" autocapitalize="off"></div>
+    <div class="field"><label>Senha provisória</label><input id="nSenha"></div>
+    <div class="field"><label>Papel</label><select id="nRole"><option value="medico">Usuário (médico)</option><option value="admin">Administrador</option></select></div>
+    <div class="field"><label>Profissão</label><select id="nProf"><option>Médico(a)</option><option>Médico(a) residente</option><option>Estudante de Medicina</option><option>Outro profissional de saúde</option><option>Gestão / administrativo</option></select></div>
+    <div class="field"><label>UF</label><select id="nUf"></select></div>
+    <div class="field"><label>CRM</label><input id="nCrm"></div>
+  </div>
+  <div class="err" id="nErr"></div>
+  <button class="btn" id="btnCriar">Criar usuário</button>
+  <div id="nCred"></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+const CFG=window.OMNI_CLOUD||{};
+const ok=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&window.supabase);
+const sb=ok?window.supabase.createClient(CFG.url,CFG.key,{auth:{storageKey:'omni_admin_auth',persistSession:true,autoRefreshToken:true}}):null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDT=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+const fmtD=d=>d?new Date(d).toLocaleDateString('pt-BR'):'—';
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2400); }
+function errPt(e){ const m=String((e&&e.message)||e||'');
+  if(/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
+  if(/already registered|already exists/i.test(m)) return 'Este e-mail já tem cadastro.';
+  if(/at least 6|password should be/i.test(m)) return 'A senha precisa ter no mínimo 6 caracteres.';
+  if(/rate limit|too many/i.test(m)) return 'Muitas tentativas seguidas. Aguarde alguns minutos.';
+  if(/failed to fetch|network/i.test(m)) return 'Sem conexão com o servidor.';
+  return m||'Erro inesperado.'; }
+const EV={login:'Entrou',cadastro:'Criou a conta',app_aberto:'Abriu o app',registro_salvo:'Salvou um registro',registro_excluido:'Excluiu um registro',checklist_completo:'Completou o checklist',logout:'Saiu'};
+const UFS='AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
+
+let ME=null, P=[], R=[], E=[], RES={}, tab='geral';
+const pName=id=>{ const p=P.find(x=>x.id===id); return p?(p.nome||p.email):'—'; };
+
+/* ---------- login ---------- */
+async function login(){
+  $('lgErr').textContent='';
+  if(!sb){ $('lgErr').textContent='Servidor não configurado (config.js).'; return; }
+  const b=$('lgBtn'); b.disabled=true; b.textContent='Entrando…';
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email:$('lgEmail').value.trim().toLowerCase(),password:$('lgPass').value});
+    if(error) throw error;
+    await enter(data.session);
+  }catch(e){ $('lgErr').textContent=errPt(e); }
+  finally{ b.disabled=false; b.textContent='Entrar'; }
+}
+async function enter(session){
+  const {data:me,error}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+  if(error) throw error;
+  if(!me||me.role!=='admin'||!me.ativo){ await sb.auth.signOut({scope:'local'}); throw new Error('Acesso restrito a administradores. Peça a um administrador para liberar o seu acesso.'); }
+  ME=me; $('meName').textContent=me.nome||me.email;
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+  $('lgPass').value='';
+  await loadAll();
+}
+async function logout(){ try{ await sb.auth.signOut({scope:'local'}); }catch(e){} ME=null; $('app').classList.add('hidden'); $('login').classList.remove('hidden'); }
+
+/* ---------- dados ---------- */
+async function fetchAll(table,cols,order){
+  const out=[]; const step=1000;
+  for(let i=0;i<20;i++){
+    const {data,error}=await sb.from(table).select(cols).order(order,{ascending:false}).range(i*step,i*step+step-1);
+    if(error) throw error; out.push(...data); if(data.length<step) break;
+  }
+  return out;
+}
+async function loadAll(){
+  try{
+    const [p,r,e,res]=await Promise.all([
+      fetchAll('profiles','*','created_at'),
+      fetchAll('registros','*','saved_at'),
+      fetchAll('eventos','*','criado_em'),
+      sb.rpc('admin_resumo_usuarios')]);
+    P=p; R=r; E=e; RES={}; ((res&&res.data)||[]).forEach(x=>RES[x.user_id]=x);
+    fillSelects(); render();
+  }catch(err){ toast('Erro ao carregar: '+errPt(err)); }
+}
+function fillSelects(){
+  const opts='<option value="">Todos</option>'+P.slice().sort((a,b)=>(a.nome||a.email||'').localeCompare(b.nome||b.email||'')).map(p=>`<option value="${p.id}">${esc(p.nome||p.email)}</option>`).join('');
+  ['fMed','uMed'].forEach(id=>{ const v=$(id).value; $(id).innerHTML=opts; $(id).value=v; });
+  const tv=$('uTipo').value; $('uTipo').innerHTML='<option value="">Todos</option>'+Object.keys(EV).map(k=>`<option value="${k}">${EV[k]}</option>`).join(''); $('uTipo').value=tv;
+}
+function render(){ ({geral:renderGeral,registros:renderRegs,uso:renderUso,usuarios:renderUsers})[tab](); }
+
+/* ---------- visão geral ---------- */
+function bars(list,max){ max=max||Math.max(1,...list.map(x=>x[1]));
+  return list.length?list.map(([l,n])=>`<div class="hb"><div>${esc(l)}</div><div class="tr"><div class="f" style="width:${Math.max(2,n/max*100)}%"></div></div><div class="n">${n}</div></div>`).join(''):'<p class="muted small">Sem dados ainda.</p>'; }
+function countBy(arr,fn){ const m={}; arr.forEach(x=>{ const k=fn(x); if(k) m[k]=(m[k]||0)+1; }); return Object.entries(m).sort((a,b)=>b[1]-a[1]); }
+function renderGeral(){
+  const now=Date.now(), D30=30*864e5;
+  const regs=R.filter(r=>!r.excluido_em);
+  const r30=regs.filter(r=>now-new Date(r.saved_at)<D30);
+  const ativos30=new Set(E.filter(e=>now-new Date(e.criado_em)<D30).map(e=>e.user_id)).size;
+  const full=regs.filter(r=>r.checklist_pct===100).length;
+  const fp=regs.filter(r=>r.via_aerea==='1ª tentativa').length, comVia=regs.filter(r=>r.via_aerea).length;
+  const adv=regs.filter(r=>r.evento_adverso===true).length, comAdv=regs.filter(r=>r.evento_adverso!=null).length;
+  const dif=regs.filter(r=>r.dificuldade&&r.dificuldade.length).length;
+  const meses=[]; for(let i=11;i>=0;i--){ const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-i); const k=d.toISOString().slice(0,7); meses.push([d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}),regs.filter(r=>(r.saved_at||'').slice(0,7)===k).length]); }
+  $('t-geral').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><div class="v">${P.filter(p=>p.ativo).length}</div><div class="l">usuários ativos</div><div class="s">${P.filter(p=>p.role==='admin').length} administrador(es)</div></div>
+      <div class="kpi"><div class="v">${ativos30}</div><div class="l">usaram nos últimos 30 dias</div></div>
+      <div class="kpi"><div class="v">${regs.length}</div><div class="l">registros de intubação</div><div class="s">${r30.length} nos últimos 30 dias</div></div>
+      <div class="kpi"><div class="v">${pct(full,regs.length)}</div><div class="l">com checklist 100%</div></div>
+      <div class="kpi"><div class="v">${pct(fp,comVia)}</div><div class="l">sucesso na 1ª tentativa</div><div class="s">de ${comVia} com via aérea informada</div></div>
+      <div class="kpi"><div class="v">${pct(adv,comAdv)}</div><div class="l">com evento adverso</div><div class="s">${dif} com dificuldade prevista</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Registros por mês</h3>${bars(meses)}</div>
+      <div class="card"><h3>Por médico</h3>${bars(countBy(regs,r=>pName(r.user_id)).slice(0,10))}</div>
+      <div class="card"><h3>Por hospital</h3>${bars(countBy(regs,r=>r.hospital).slice(0,10))}</div>
+      <div class="card"><h3>Desfecho</h3>${bars(countBy(regs,r=>r.desfecho))}</div>
+      <div class="card"><h3>Via aérea</h3>${bars(countBy(regs,r=>r.via_aerea))}</div>
+      <div class="card"><h3>Setor</h3>${bars(countBy(regs,r=>r.setor))}</div>
+    </div>`;
+}
+
+/* ---------- registros ---------- */
+function filtRegs(){
+  const q=$('fBusca').value.trim().toLowerCase(), m=$('fMed').value, de=$('fDe').value, ate=$('fAte').value, exc=$('fExc').checked;
+  return R.filter(r=>{
+    if(!exc&&r.excluido_em) return false;
+    if(m&&r.user_id!==m) return false;
+    const d=(r.saved_at||'').slice(0,10);
+    if(de&&d<de) return false; if(ate&&d>ate) return false;
+    if(q&&![r.paciente,r.hospital,r.setor,pName(r.user_id)].join(' ').toLowerCase().includes(q)) return false;
+    return true; });
+}
+function renderRegs(){
+  const L=filtRegs();
+  $('regCount').textContent=`${L.length} registro(s)`;
+  $('regBody').innerHTML=L.length?L.slice(0,1000).map(r=>{
+    const al=[]; if(r.evento_adverso) al.push('<span class="pill bad">evento adverso</span>');
+    if(r.dificuldade&&r.dificuldade.length) al.push(`<span class="pill warn">${esc(r.dificuldade.join(' '))}</span>`);
+    if(r.excluido_em) al.push('<span class="pill">excluído pelo médico</span>');
+    const ck=r.checklist_pct==null?'—':`<span class="pill ${r.checklist_pct===100?'ok':''}">${r.checklist_pct}%</span>`;
+    const desfCls=r.desfecho==='Óbito'?'bad':'';
+    return `<tr class="click${r.excluido_em?' del':''}" data-id="${r.id}"><td>${fmtDT(r.saved_at)}</td><td>${esc(pName(r.user_id))}</td><td><b>${esc(r.paciente||'—')}</b></td><td>${esc([r.idade?r.idade+' a':'',r.sexo].filter(Boolean).join(' · ')||'—')}</td><td>${esc([r.hospital,r.setor].filter(Boolean).join(' · ')||'—')}</td><td>${esc(r.via_aerea||'—')}</td><td>${r.desfecho?`<span class="pill ${desfCls}">${esc(r.desfecho)}</span>`:'—'}</td><td>${ck}</td><td>${al.join(' ')}</td></tr>`; }).join(''):'<tr><td colspan="9" class="empty">Nenhum registro encontrado.</td></tr>';
+}
+function kv(pairs){ const f=pairs.filter(p=>p[1]!==''&&p[1]!=null&&p[1]!==undefined); return f.length?`<div class="kv">${f.map(([k,v])=>`<div><span>${esc(k)}</span>${esc(v)}</div>`).join('')}</div>`:'<p class="muted small">Não preenchido.</p>'; }
+function showReg(id){
+  const r=R.find(x=>x.id===id); if(!r) return; const d=r.dados||{}; const prof=P.find(p=>p.id===r.user_id)||{};
+  const vi=d.vitalsIn||{};
+  let ck='<p class="muted small">Detalhe do checklist não disponível neste registro.</p>';
+  if(Array.isArray(d.checklist)&&d.checklist.length){
+    const bySec={}; d.checklist.forEach(it=>{ (bySec[it.secao]=bySec[it.secao]||{}); (bySec[it.secao][it.grupo]=bySec[it.secao][it.grupo]||[]).push(it); });
+    ck=Object.entries(bySec).map(([sec,gr])=>{
+      const isPred=sec==='Avaliação preditiva';
+      const blocks=Object.entries(gr).map(([g,its])=>{
+        if(isPred){ const hit=its.filter(i=>i.ok); return `<div class="ckb"><b>${esc(g)}</b>${hit.length?hit.map(i=>`<div class="i y">${esc(i.item)}</div>`).join(''):'<div class="i n">nenhum fator marcado</div>'}</div>`; }
+        return `<div class="ckb">${its.map(i=>i.item==null?`<b>${i.ok?'✓':'☐'} ${esc(g)}</b>`:(i.escolha!==undefined?`<div class="i c">${esc(i.item)}: <b style="display:inline">${esc(i.escolha||'não escolhido')}</b></div>`:`<div class="i ${i.ok?'y':'n'}">${esc(i.item)}</div>`)).join('')}</div>`; }).join('');
+      return `<div class="sec"><h4>${esc(isPred?'Avaliação preditiva de dificuldade (Walls)':'Checklist · '+sec)}</h4><div class="ckg">${blocks}</div></div>`; }).join('');
+  }
+  const post=Array.isArray(d.post)&&d.post.some(p=>p.pa||p.fc||p.fr||p.spo2)?`<table class="vt"><tr><th>Tempo</th><th>PA</th><th>FC</th><th>FR</th><th>SpO₂</th></tr>${d.post.map(p=>`<tr><td>${esc(p.t)}</td><td>${esc(p.pa)}</td><td>${esc(p.fc)}</td><td>${esc(p.fr)}</td><td>${esc(p.spo2)}</td></tr>`).join('')}</table>`:'<p class="muted small">Não preenchido.</p>';
+  $('detBody').innerHTML=`
+    <h2>${esc(r.paciente||'Sem identificação')}</h2>
+    <div class="muted small">${fmtDT(r.saved_at)} · registrado por <b>${esc(prof.nome||prof.email||'—')}</b>${prof.crm?` · CRM ${esc(prof.crm)}${prof.uf?'/'+esc(prof.uf):''}`:''}${r.excluido_em?` · <span class="pill">excluído pelo médico em ${fmtDT(r.excluido_em)}</span>`:''}</div>
+    <div class="sec"><h4>Paciente</h4>${kv([['Idade',d.idade],['Sexo',d.sexo],['Altura (cm)',d.altura],['Peso real (kg)',d.pesoReal],['Peso predito (kg)',d.pesoPred]])}</div>
+    <div class="sec"><h4>Local e plantão</h4>${kv([['Hospital',d.hospital],['Setor',d.setor],['Horas de plantão',d.plantaoH]])}</div>
+    <div class="sec"><h4>Indicação e medicações</h4>${kv([['Indicação',d.indicacao],['Indutor',d.medIndutor],['Bloqueador',d.medBnm],['Guia / adjunto',d.guia],['Técnica',d.tecnica],['Tubo',d.tubo],['Pré-oxigenação',d.preox]])}</div>
+    <div class="sec"><h4>Sinais vitais de entrada</h4>${kv([['PA',vi.pa],['FC',vi.fc],['FR',vi.fr],['SpO₂',vi.spo2],['Temp',vi.temp],['Glicemia',vi.glic]])}</div>
+    <div class="sec"><h4>Checklist</h4>${kv([['Completo',d.checklistPct!=null?d.checklistPct+'%':''],['Dificuldade prevista',(d.dificuldade||[]).join(', ')]])}</div>
+    ${ck}
+    <div class="sec"><h4>Pós-IOT</h4>${kv([['Sedoanalgesia',d.sedacao],['Via aérea',d.viaAerea],['Resgate',d.resgate],['Desfecho',d.desfecho],['Evento adverso',d.advHas],['Eventos',(d.adversos||[]).join(', ')],['Observações',d.obs]])}</div>
+    <div class="sec"><h4>Sinais vitais pós-intubação</h4>${post}</div>`;
+  $('mDet').classList.add('on');
+}
+function csvCell(v){ v=v==null?'':String(v); return /[";\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function exportCsv(){
+  const L=filtRegs(); if(!L.length){ toast('Nada para exportar'); return; }
+  const ckNames=[]; L.forEach(r=>((r.dados||{}).checklist||[]).forEach(i=>{ const n=(i.secao==='Avaliação preditiva'?'Walls · ':'')+i.grupo+(i.item?' · '+i.item:''); if(!ckNames.includes(n)) ckNames.push(n); }));
+  const head=['data','medico','crm','paciente','idade','sexo','altura','peso_real','peso_predito','hospital','setor','plantao_h','indicacao','indutor','bloqueador','guia','tecnica','tubo','preox','pa_entrada','fc_entrada','fr_entrada','spo2_entrada','temp_entrada','glic_entrada','checklist_pct','dificuldade','sedacao','via_aerea','resgate','desfecho','evento_adverso','eventos','obs','excluido_em',...ckNames];
+  const rows=L.map(r=>{ const d=r.dados||{}, vi=d.vitalsIn||{}, p=P.find(x=>x.id===r.user_id)||{};
+    const ck={}; (d.checklist||[]).forEach(i=>{ const n=(i.secao==='Avaliação preditiva'?'Walls · ':'')+i.grupo+(i.item?' · '+i.item:''); ck[n]=i.escolha!==undefined?i.escolha:(i.ok?'sim':'não'); });
+    return [fmtDT(r.saved_at),p.nome||p.email,p.crm,d.nome,d.idade,d.sexo,d.altura,d.pesoReal,d.pesoPred,d.hospital,d.setor,d.plantaoH,d.indicacao,d.medIndutor,d.medBnm,d.guia,d.tecnica,d.tubo,d.preox,vi.pa,vi.fc,vi.fr,vi.spo2,vi.temp,vi.glic,d.checklistPct,(d.dificuldade||[]).join(' '),d.sedacao,d.viaAerea,d.resgate,d.desfecho,d.advHas,(d.adversos||[]).join(' | '),d.obs,r.excluido_em?fmtDT(r.excluido_em):'',...ckNames.map(n=>ck[n]==null?'':ck[n])]; });
+  const csv='﻿'+[head,...rows].map(r=>r.map(csvCell).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='omni-registros-'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+
+/* ---------- histórico de uso ---------- */
+function renderUso(){
+  $('resBody').innerHTML=P.length?P.slice().sort((a,b)=>String((RES[b.id]||{}).ultimo_acesso||'').localeCompare(String((RES[a.id]||{}).ultimo_acesso||''))).map(p=>{ const x=RES[p.id]||{};
+    return `<tr><td><b>${esc(p.nome||'—')}</b><div class="muted small">${esc(p.email)}</div></td><td>${fmtDT(x.ultimo_acesso)}</td><td>${x.acessos||0}</td><td>${x.registros||0}</td><td>${fmtDT(x.ultimo_registro)}</td></tr>`; }).join(''):'<tr><td colspan="5" class="empty">Nenhum usuário.</td></tr>';
+  const m=$('uMed').value, t=$('uTipo').value, de=$('uDe').value, ate=$('uAte').value;
+  const L=E.filter(e=>{ if(m&&e.user_id!==m) return false; if(t&&e.tipo!==t) return false; const d=(e.criado_em||'').slice(0,10); if(de&&d<de) return false; if(ate&&d>ate) return false; return true; });
+  $('evCount').textContent=`${L.length} evento(s)${L.length>1000?' · mostrando os 1000 mais recentes':''}`;
+  $('evBody').innerHTML=L.length?L.slice(0,1000).map(e=>{ const det=e.detalhe||{}; const reg=det.client_id?R.find(r=>+r.client_id===+det.client_id&&r.user_id===e.user_id):null;
+    const dtxt=reg?`<a href="#" data-reg="${reg.id}">${esc(reg.paciente||'registro')}</a>${det.checklist_pct!=null?' · checklist '+det.checklist_pct+'%':''}`:(det.checklist_pct!=null?'checklist '+det.checklist_pct+'%':'');
+    return `<tr><td>${fmtDT(e.criado_em)}</td><td>${esc(pName(e.user_id))}</td><td>${esc(EV[e.tipo]||e.tipo)}</td><td>${dtxt}</td></tr>`; }).join(''):'<tr><td colspan="4" class="empty">Nenhum evento.</td></tr>';
+}
+
+/* ---------- usuários ---------- */
+function renderUsers(){
+  const q=$('pBusca').value.trim().toLowerCase();
+  const L=P.filter(p=>!q||[p.nome,p.email,p.crm,p.uf,p.profissao].join(' ').toLowerCase().includes(q)).sort((a,b)=>(a.nome||a.email||'').localeCompare(b.nome||b.email||''));
+  $('usrCount').textContent=`${L.length} usuário(s)`;
+  $('usrBody').innerHTML=L.map(p=>{ const me=ME&&p.id===ME.id; const x=RES[p.id]||{};
+    return `<tr><td><b>${esc(p.nome||'—')}</b>${me?' <span class="muted small">(você)</span>':''}</td><td>${esc(p.email)}</td><td>${esc(p.profissao||'—')}</td><td>${esc([p.crm,p.uf].filter(Boolean).join('/')||'—')}</td>
+      <td>${p.role==='admin'?'<span class="pill adm">Admin</span>':'<span class="pill">Usuário</span>'}</td>
+      <td>${p.ativo?'<span class="pill ok">ativo</span>':'<span class="pill bad">desativado</span>'}</td>
+      <td>${fmtD(p.created_at)}</td><td>${fmtDT(x.ultimo_acesso)}</td>
+      <td style="white-space:nowrap">${p.role==='admin'?`<button class="btn sm ghost" data-role="medico" data-u="${p.id}">Remover admin</button>`:`<button class="btn sm ghost" data-role="admin" data-u="${p.id}">Tornar admin</button>`}
+        ${me?'':(p.ativo?`<button class="btn sm warn" data-ativo="0" data-u="${p.id}">Desativar</button>`:`<button class="btn sm ghost" data-ativo="1" data-u="${p.id}">Reativar</button>`)}</td></tr>`; }).join('')||'<tr><td colspan="9" class="empty">Nenhum usuário.</td></tr>';
+}
+async function setRole(id,role){
+  const p=P.find(x=>x.id===id); if(!p) return;
+  if(!confirm(role==='admin'?`Dar acesso de administrador a ${p.nome||p.email}?\nEla poderá ver todos os registros e gerenciar usuários.`:`Remover o acesso de administrador de ${p.nome||p.email}?`)) return;
+  const {error}=await sb.rpc('admin_set_role',{p_user:id,p_role:role});
+  if(error){ alert(errPt(error)); return; }
+  p.role=role; toast('Papel atualizado'); renderUsers();
+  if(ME&&id===ME.id&&role!=='admin'){ await logout(); }
+}
+async function setAtivo(id,ativo){
+  const p=P.find(x=>x.id===id); if(!p) return;
+  if(!ativo&&!confirm(`Desativar ${p.nome||p.email}?\nA pessoa não consegue mais entrar nem enviar registros. Os dados já enviados continuam aqui.`)) return;
+  const {error}=await sb.rpc('admin_set_ativo',{p_user:id,p_ativo:ativo});
+  if(error){ alert(errPt(error)); return; }
+  p.ativo=ativo; toast(ativo?'Usuário reativado':'Usuário desativado'); renderUsers();
+}
+function genPass(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'; let s=''; const a=new Uint32Array(10); crypto.getRandomValues(a); a.forEach(n=>s+=c[n%c.length]); return s; }
+function openNovo(){ ['nNome','nEmail','nCrm'].forEach(id=>$(id).value=''); $('nSenha').value=genPass(); $('nRole').value='medico'; $('nUf').value='SP'; $('nErr').textContent=''; $('nErr').className='err'; $('nCred').innerHTML=''; $('btnCriar').disabled=false; $('mNovo').classList.add('on'); }
+async function criar(){
+  const nome=$('nNome').value.trim(), email=$('nEmail').value.trim().toLowerCase(), senha=$('nSenha').value, role=$('nRole').value;
+  $('nErr').textContent=''; $('nErr').className='err';
+  if(!nome||!email) return $('nErr').textContent='Preencha nome e e-mail.';
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return $('nErr').textContent='E-mail inválido.';
+  if(senha.length<6) return $('nErr').textContent='A senha precisa ter no mínimo 6 caracteres.';
+  if(P.some(p=>(p.email||'').toLowerCase()===email)) return $('nErr').textContent='Este e-mail já tem cadastro.';
+  const b=$('btnCriar'); b.disabled=true; b.textContent='Criando…';
+  try{
+    /* cliente separado, sem guardar sessão: cria a conta sem desconectar você do painel */
+    const tmp=window.supabase.createClient(CFG.url,CFG.key,{auth:{storageKey:'omni_admin_tmp',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+    const {data,error}=await tmp.auth.signUp({email,password:senha,options:{data:{nome,profissao:$('nProf').value,uf:$('nUf').value,crm:$('nCrm').value.trim(),terms_version:'admin',terms_accepted_at:''}}});
+    if(error) throw error;
+    const u=data&&data.user; if(!u||(Array.isArray(u.identities)&&u.identities.length===0)) throw new Error('Este e-mail já tem cadastro.');
+    try{ await tmp.auth.signOut({scope:'local'}); }catch(_){}
+    if(role==='admin'){ await new Promise(r=>setTimeout(r,400)); const {error:e2}=await sb.rpc('admin_set_role',{p_user:u.id,p_role:'admin'}); if(e2) throw new Error('Conta criada, mas não foi possível dar acesso de admin: '+errPt(e2)); }
+    $('nErr').className='err ok'; $('nErr').textContent='Usuário criado.';
+    $('nCred').innerHTML=`<div class="cred">Envie estes dados para ${esc(nome)}:\n\nApp: https://guilhermelima012.github.io/\n${role==='admin'?'Painel: https://guilhermelima012.github.io/admin.html\n':''}E-mail: ${esc(email)}\nSenha provisória: ${esc(senha)}${data.session?'':'\n\nObs.: a pessoa precisa confirmar o e-mail pelo link que o Supabase enviou antes de entrar.'}</div><button class="btn sm ghost" style="margin-top:8px" id="btnCopy">Copiar</button>`;
+    $('btnCopy').onclick=()=>{ navigator.clipboard&&navigator.clipboard.writeText($('nCred').innerText.replace(/\nCopiar$/,'')).then(()=>toast('Copiado')); };
+    b.textContent='Criar outro'; b.disabled=false; b.onclick=openNovo;
+    await loadAll();
+  }catch(e){ $('nErr').textContent=errPt(e); b.disabled=false; b.textContent='Criar usuário'; }
+}
+
+/* ---------- eventos da página ---------- */
+$('lgBtn').onclick=login;
+$('lgPass').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+$('btnOut').onclick=logout;
+$('btnReload').onclick=()=>{ loadAll().then(()=>toast('Dados atualizados')); };
+$('tabs').onclick=e=>{ const b=e.target.closest('[data-t]'); if(!b) return; tab=b.dataset.t;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['geral','registros','uso','usuarios'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==tab)); render(); };
+['fBusca','fMed','fDe','fAte','fExc'].forEach(id=>$(id).addEventListener('input',renderRegs));
+['uMed','uTipo','uDe','uAte'].forEach(id=>$(id).addEventListener('input',renderUso));
+$('pBusca').addEventListener('input',renderUsers);
+$('btnCsv').onclick=exportCsv;
+$('btnNovo').onclick=openNovo;
+$('btnCriar').onclick=criar;
+$('nUf').innerHTML=UFS.map(u=>`<option>${u}</option>`).join('');
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.classList.contains('mbg')){ document.querySelectorAll('.mbg').forEach(m=>m.classList.remove('on')); const b=$('btnCriar'); b.onclick=criar; b.textContent='Criar usuário'; return; }
+  const tr=e.target.closest('tr[data-id]'); if(tr){ showReg(tr.dataset.id); return; }
+  const rg=e.target.closest('[data-reg]'); if(rg){ e.preventDefault(); showReg(rg.dataset.reg); return; }
+  const ro=e.target.closest('[data-role]'); if(ro){ setRole(ro.dataset.u,ro.dataset.role); return; }
+  const at=e.target.closest('[data-ativo]'); if(at){ setAtivo(at.dataset.u,at.dataset.ativo==='1'); return; }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.mbg').forEach(m=>m.classList.remove('on')); });
+
+/* sessão guardada */
+(async()=>{
+  if(!sb){ $('lgErr').textContent='Servidor não configurado (config.js).'; return; }
+  try{ const {data}=await sb.auth.getSession(); if(data&&data.session) await enter(data.session); }catch(e){ $('lgErr').textContent=errPt(e); }
+})();
+</script>
+</body>
+</html>
